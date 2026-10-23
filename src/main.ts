@@ -10,25 +10,28 @@ import { adicionarAoCarrinho,removerDoCarrinho,alterarQuantidadeCarrinho, calcul
 import { fazerPedido, listarPedido, listarPedidosPorCliente } from './pedidos';
 
 
-
 const prompt = promptSync({sigint: true});
 
 console.log ('\n ======= CADASTRO DE CLIENTES =======');
 
-const nomeImput : string = prompt('Digite o nome do cliente: ');
-const idImput : number = Number(prompt('Digite o Id do cliente: '));
-const emailImput : string = prompt( 'Digite o e-mail do Cliente: ');
+let cadastroRealizado = false;
 
-const novoCliente : Cliente = {
-    nome: nomeImput,
-    id : idImput,
-    email :  emailImput,
+while (!cadastroRealizado) {
+    const nomeInput: string = prompt('Digite o nome do cliente: ');
+    const idInput: number = Number(prompt('Digite o Id do cliente: '));
+    const emailInput: string = prompt('Digite o e-mail do Cliente: ');
+
+    const novoCliente: Cliente = {
+        nome: nomeInput,
+        id: idInput,
+        email: emailInput,
+    }
+
+        cadastroRealizado = cadastrarCliente(novoCliente);
 }
 
-cadastrarCliente(novoCliente);
-
 const listaAtual = listarClientes();
-console.log(listaAtual)
+console.log(listaAtual);
 
 console.log ('\n======= CADASTRO DE PRODUTOS =======');
 
@@ -60,8 +63,7 @@ const produto = buscarProdutoPorId(idProd);
 
 if (produto) {
     adicionarAoCarrinho(produto, qtd);
-    console.log ("Produto adicionado ao carrinho com sucesso");
-    } else {
+        } else {
     console.log("Produto não encontrado!");
 }
 
@@ -77,17 +79,27 @@ console.log("3 - Continuar para finalizar o pedido");
 
 const opcaoCarrinho = Number(prompt("Escolha uma opção: "));
 
-if (opcaoCarrinho === 1) {
-    const idProdAlterar = Number(prompt("Digite o ID do produto para alterar a quantidade: "));
-    const novaQtd = Number(prompt("Digite a nova quantidade: "));
-    alterarQuantidadeCarrinho(idProdAlterar, novaQtd);
-    console.log("Quantidade atualizada com sucesso!");
-} else if (opcaoCarrinho === 2) {
+    if (opcaoCarrinho === 1) {
+        const idProdAlterar = Number(prompt("Digite o ID do produto para alterar a quantidade: "));
+        
+            const produtoEncontrado=buscarProdutoPorId(idProdAlterar);
+        let quantidadeValida = false;
+    
+    if (!produtoEncontrado) {
+        console.log (' Produto não encontrado');
+    }
+        while (!quantidadeValida && produtoEncontrado) {
+            const novaQtd = Number(prompt("Digite a nova quantidade: "));
+            quantidadeValida = alterarQuantidadeCarrinho(idProdAlterar, novaQtd);
+        }
+    }
+    
+ else if (opcaoCarrinho === 2) {
     const idProdRemover = Number(prompt("Digite o ID do produto que deseja remover do carrinho: "));
     removerDoCarrinho(idProdRemover);
     console.log("Item removido do carrinho!");
 } else {
-    console.log("A prosseguir para o fecho do pedido...");
+    console.log(" Prosseguir para fechamento do pedido...");
 }
 
 

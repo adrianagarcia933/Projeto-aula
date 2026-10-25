@@ -1,6 +1,7 @@
 import type { Produto } from './types';
 
 export type ItemCarrinho = {
+    idCliente: number;
     produto: Produto;
     quantidade: number;
     subtotal: number;
@@ -8,7 +9,7 @@ export type ItemCarrinho = {
 
 const carrinho: ItemCarrinho[] = [];
 
-function adicionarAoCarrinho(produto: Produto | undefined, quantidade: number): boolean {
+function adicionarAoCarrinho(idCliente: number,produto: Produto | undefined, quantidade: number): boolean {
     if (!produto) {
         console.log("Produto não encontrado!");
         return false;
@@ -24,7 +25,7 @@ function adicionarAoCarrinho(produto: Produto | undefined, quantidade: number): 
         return false;
     }
 
-    const itemExistente = carrinho.find(item => item.produto.id === produto.id);
+    const itemExistente = carrinho.find(item => item.idCliente === idCliente && produto.id === produto.id);
 
         if (itemExistente) {
         const novaQtd = itemExistente.quantidade + quantidade;
@@ -39,6 +40,7 @@ function adicionarAoCarrinho(produto: Produto | undefined, quantidade: number): 
     }
 
     const novoItem: ItemCarrinho = {
+        idCliente:idCliente,
         produto: produto,
         quantidade: quantidade,
         subtotal: produto.preco * quantidade

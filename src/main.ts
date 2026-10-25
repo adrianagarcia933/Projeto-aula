@@ -12,26 +12,55 @@ import { fazerPedido, listarPedido, listarPedidosPorCliente } from './pedidos';
 
 const prompt = promptSync({sigint: true});
 
-console.log ('\n ======= CADASTRO DE CLIENTES =======');
+console.log('\n ======= GESTÃO DE CLIENTES =======');
 
-let cadastroRealizado = false;
+const clientesCadastrados = listarClientes();
 
-while (!cadastroRealizado) {
-    const nomeInput: string = prompt('Digite o nome do cliente: ');
-    const idInput: number = Number(prompt('Digite o Id do cliente: '));
-    const emailInput: string = prompt('Digite o e-mail do Cliente: ');
+if (clientesCadastrados.length > 0) {
+    console.log("Clientes já cadastrados no sistema:");
+    clientesCadastrados.forEach(cli => {
+        console.log(`- ID: ${cli.id} | Nome: ${cli.nome} | E-mail: ${cli.email}`);
+    });
 
-    const novoCliente: Cliente = {
-        nome: nomeInput,
-        id: idInput,
-        email: emailInput,
+    const acaoCliente = prompt('Deseja cadastrar um novo cliente? (s/n): ').toLowerCase();
+    
+    if (acaoCliente === 's') {
+        let cadastroRealizado = false;
+        while (!cadastroRealizado) {
+            const nomeInput: string = prompt('Digite o nome do cliente: ');
+            const idInput: number = Number(prompt('Digite o Id do cliente: '));
+            const emailInput: string = prompt('Digite o e-mail do Cliente: ');
+
+            const novoCliente: Cliente = {
+                nome: nomeInput,
+                id: idInput,
+                email: emailInput,
+            }
+
+            cadastroRealizado = cadastrarCliente(novoCliente);
+        }
+    } else {
+        console.log("Prosseguindo com os clientes já cadastrados...");
     }
+} else {
+    console.log("Nenhum cliente cadastrado. Cadastre o primeiro cliente para continuar:");
+    let cadastroRealizado = false;
+
+    while (!cadastroRealizado) {
+        const nomeInput: string = prompt('Digite o nome do cliente: ');
+        const idInput: number = Number(prompt('Digite o Id do cliente: '));
+        const emailInput: string = prompt('Digite o e-mail do Cliente: ');
+
+        const novoCliente: Cliente = {
+            nome: nomeInput,
+            id: idInput,
+            email: emailInput,
+        }
 
         cadastroRealizado = cadastrarCliente(novoCliente);
+    }
 }
 
-const listaAtual = listarClientes();
-console.log(listaAtual);
 
 console.log ('\n======= CADASTRO DE PRODUTOS =======');
 
@@ -57,15 +86,20 @@ listarProdutos().forEach(prod => {
 });
 
 console.log("\n====== CARRINHO ======");
+const idCliente = Number(prompt('Digite o ID do Cliente: '));
+const cliente = buscarProdutoPorId(idCliente);
+
+
 const idProd = Number(prompt("Digite o ID do produto: "));
 const qtd = Number(prompt("Digite a quantidade desejada: "));
 const produto = buscarProdutoPorId(idProd);
 
+
 if (produto) {
-    adicionarAoCarrinho(produto, qtd);
+    adicionarAoCarrinho(idCliente,produto, qtd);
         } else {
     console.log("Produto não encontrado!");
-}
+    }
 
 console.log("\n===== ITENS NO CARRINHO =====");
 listarCarrinho().forEach(item => {
@@ -77,7 +111,7 @@ console.log("1 - Alterar quantidade de um produto");
 console.log("2 - Excluir um item do carrinho");
 console.log("3 - Continuar para finalizar o pedido");
 
-const opcaoCarrinho = Number(prompt("Escolha uma opção: "));
+const opcaoCarrinho = Number(prompt("\nEscolha uma opção: "));
 
     if (opcaoCarrinho === 1) {
         const idProdAlterar = Number(prompt("Digite o ID do produto para alterar a quantidade: "));
@@ -124,24 +158,6 @@ if (sucesso) {
     });
 }
 
-console.log("\n===== CONSULTAR PEDIDOS DE UM CLIENTE =====");
-const idClienteConsulta = Number(prompt("Digite o ID do cliente que deseja consultar os pedidos: "));
-
-const pedidosCliente = listarPedidosPorCliente(idClienteConsulta);
-
-if (pedidosCliente.length > 0) {
-    console.log(`\nPedidos encontrados para o cliente ID ${idClienteConsulta}:`);
-    pedidosCliente.forEach(ped => {
-        console.log(`- Pedido ID: ${ped.id} | Total: R$ ${ped.total} | Data: ${ped.data}`);
-    });
-} else {
-    console.log("Nenhum pedido encontrado para este cliente.");
-
-console.log("\n========= RELATÓRIO DE ESTOQUE ATUALIZADO =========");
-listarProdutos().forEach(prod => {
-    console.log(`- ID: ${prod.id} | Produto: ${prod.produto} | Categoria: ${prod.categoria} | Preço: R$ ${prod.preco} | Estoque Atual: ${prod.estoque} unidades`);
-});
-}
 
 function relatorioClientes() {
     console.log("\n========= RELATÓRIO DE CLIENTES CADASTRADOS =========");
